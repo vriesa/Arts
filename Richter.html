@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang=de>
+<head>
+ <meta charset="utf-8">
+ <title>Gerhard Richter Farben</title>
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <style>
+  @media only screen and (max-width: 749px) {
+    .flex-container {
+      display: block;
+    }
+    #canvas, #gap, #statistik {
+      width: 100%;
+    }
+  }
+
+  @media only screen and (min-width: 750px) {
+    .flex-container {
+      display: flex;
+    }
+    #gap {width: 100px;}
+    #statistik {width: 300px}
+  }
+ </style>
+</head>
+
+<body onload="farben(10);">
+ 
+ <div class="flex-container">
+   <div id="canvas"></div>
+   <div id="gap"></div>
+   <div id="statistik"></div>
+ </div>
+ 
+ <div id="control-panel">
+ Farbenzahl je Kante:
+ <select onclick="farben(this.value);">
+<script>
+let farbenzahl = 10; // global variable
+
+// Display checkbox:
+const werte = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 72, 80, 90, 100, 250, 500];
+for (let n of werte) {
+   document.write("  <option value=\"" + n + "\"");
+   if (n == farbenzahl) { document.write(" selected");}
+   document.write(">" + n + "</option>");
+}
+  </script>
+  </select>
+  &nbsp; &nbsp;
+  Farbstatistik:
+  <input type="checkbox" id="checkFarbverteilung" onchange="zeigen('farbverteilung');" >
+  </div> <!-- end of control panel -->
+
+ <script>
+
+/** This method outputs a square mosaic of colored squares according to 
+ *  a technique by Gerhard Richter. If checked by the user, the 
+ *  frequency distribution of the selected colors are also displayed.
+ *  The number of single squares in height and width is determined by the 
+ *  input parameter, the colors are randomly chosen from a given color palette. 
+ *  @param n the number of the single squares per edge
+**/
+/** Diese Methode gibt ein quadratisches Farbmosaik aus Einzelquadraten gemäß 
+ *  einer Technik von Gerhard Richter aus. Wenn vom Anwender ausgewählt, 
+ *  wird ebenso die Häufigkeitsverteilung der ausgewählten Farben angezeigt.
+ *  Die Anzahl der Einzelquadrate in Höhe und Breite ist dabei durch den
+ *  Eingabeparameter bestimmt, die Farben sind aus jedesmal zufällig aus 
+ *  einer gegebenen Farbpalette gewählt.
+ *  @param n die Anzahl der Einzelquadrate je Kante
+ */
+
+const farben = function(n) {
+   //const size = 15 * 50 / n; // length of each color square in px
+   
+   let width;
+   if (document.getElementById("canvas").offsetWidth > 0) {
+      width = document.getElementById("canvas").offsetWidth;
+   } else {
+      width = window.innerWidth - 300;
+   }
+   const height = window.innerHeight - 36;
+   const size = height < width ? height / n : width / n; // length of each color square in px
+   
+   let farbindex = 0;
+   
+   farbenzahl = n; // global variable
+
+   // https://www.rapidtables.org/de/web/color/RGB_Color.html
+   const palette = [
+      "#8B0000", // Dunkelrot
+      "#FF0000", // Rot
+      "#FF4500", // Orangerot
+      "#FFD700", // Gold
+      "#FFFF00", // Gelb
+      "#008000", // Grün
+      "#228B22", // Waldgrün
+      "#006400", // Dunkelgrün
+      //"#6495ED", // Kornblumenblau
+      "#00BFFF", // tiefes Himmelblau
+      "#1E90FF", // Dodger Blau
+      "#4169E1", // Königsblau
+      "#0000FF", // Blau
+      "#000080", // Marine
+      "#4B0082", // Indigo
+      "#800080", // Lila 
+      "#C0004C", // Purpur
+   ];
+   let farbverteilung = []; // speichert die augewählte Farbverteilung
+   for (i = 0; i < palette.length; i++) {farbverteilung[i] = 0;};
+   
+   let out = "<table style=\"border-collapse: collapse;\">";
+
+   for (let i = 0; i < n; i++) {
+      out += "<tr>";
+      for (let j = 0; j < n; j++) {
+         farbindex = parseInt(palette.length * Math.random());
+         style  = "width:" + size + "px; height:" + size + "px;";   
+         style += "padding: 0px;";
+         style += "background-color:" + palette[farbindex] + ";";
+         out += "<td style=\"" + style + "\"></td>";
+         farbverteilung[farbindex]++;
+      }
+      out += "</tr>";
+   }
+   out += "</table>";
+  
+   // Farbverteilung:
+   max = 0;
+   for (anzahl of farbverteilung) {
+      if (max < anzahl) max = anzahl;
+   }
+   text = "<table id=\"farbverteilung\">";
+   text += "<tr><th colspan=\"2\">Verteilung der verwendeten Farben</th></tr><tr><td colspan=\"2\"><hr></td></tr>";
+   for (farbindex = 0; farbindex < farbverteilung.length; farbindex++) {
+      text += "<tr>";
+      text += "<td style=\"text-align:right;\">" + farbverteilung[farbindex] + "</td>";
+      style  = "height:" + 10 + "px; width:" + 
+         farbverteilung[farbindex] * 100 / max + "px;";
+      style += "background-color:" + palette[farbindex] + ";";
+      text += "<td><div style=\"" + style + "\"></div></td>";
+      text += "</tr>";
+   }
+   summe = 0;
+   for (farbindex = 0; farbindex < farbverteilung.length; farbindex++) {
+      summe += farbverteilung[farbindex];
+   }
+   text += "<tr><td><hr></td><td></td></tr>";
+   text += "<tr><td style=\"text-align:right;\">" + summe + "</td><td></td></tr>";
+   text += "</table>";   
+      
+   document.getElementById("canvas").innerHTML = out;
+   document.getElementById("statistik").innerHTML = text;
+   zeigen("farbverteilung");
+}
+
+const zeigen = function (elementID) {
+   if (document.getElementById("checkFarbverteilung").checked) { 
+      document.getElementById(elementID).style.display = "inline";
+   } else {
+      document.getElementById(elementID).style.display = "None";
+   }
+}
+</script>
+
+</body>
+</html>
+
