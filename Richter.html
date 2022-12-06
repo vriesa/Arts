@@ -39,7 +39,7 @@
 let farbenzahl = 10; // global variable
 
 // Display checkbox:
-const werte = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 72, 80, 90, 100, 250, 500];
+const werte = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 20, 30, 40, 50, 60, 64, 70, 72, 80, 90, 100, 250, 500];
 for (let n of werte) {
    document.write("  <option value=\"" + n + "\"");
    if (n == farbenzahl) { document.write(" selected");}
@@ -131,7 +131,7 @@ const farben = function(n) {
       if (max < anzahl) max = anzahl;
    }
    text = "<table id=\"farbverteilung\">";
-   text += "<tr><th colspan=\"2\">Verteilung der verwendeten Farben</th></tr><tr><td colspan=\"2\"><hr></td></tr>";
+   text += "<tr><th colspan=\"2\">Verteilung der " + palette.length + " verwendeten Farben</th></tr><tr><td colspan=\"2\"><hr></td></tr>";
    for (farbindex = 0; farbindex < farbverteilung.length; farbindex++) {
       text += "<tr>";
       text += "<td style=\"text-align:right;\">" + farbverteilung[farbindex] + "</td>";
